@@ -313,10 +313,10 @@
             filterAndRender();
 
             // Hide overlay *after* analysis and render are complete
-            // Use a slight timeout to ensure the browser has finished rendering before hiding
-            setTimeout(() => {
+            // Use requestAnimationFrame to ensure the browser has finished painting before hiding
+            window.requestAnimationFrame(() => {
                 document.getElementById('loading-overlay').classList.add('hidden');
-            }, 50); 
+            });
         }
 
         // --- RBAC and Filtering Logic ---
@@ -487,10 +487,7 @@
         }
 
         // --- LIFECYCLE HOOKS ---
-        // Run analysis immediately when the page loads
         document.addEventListener('DOMContentLoaded', runFullAnalysis);
-        
-        // Add listeners for filter and RBAC controls
         document.getElementById('role-select').addEventListener('change', (e) => filterAndRender(e.target.value));
         document.getElementById('region-select').addEventListener('change', filterAndRender);
         
@@ -511,6 +508,6 @@
 2.  **Commit and Push:**
     ```bash
     git add public/index.html
-    git commit -m "Fix: Final loading overlay sequence fix for instant dashboard interaction."
+    git commit -m "Fix: Guaranteed overlay removal using requestAnimationFrame."
     git push
     
