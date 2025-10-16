@@ -1,0 +1,10 @@
+    [build]
+      # Set the command to a harmless shell command that does nothing.
+      command = "echo 'Skipping dependencies for static HTML app.'"
+      
+      # Confirm the publish directory
+      publish = "public"
+
+    [build.environment]
+      # Setting this to ensure no accidental Python version issues are introduced.
+      PYTHON_VERSION = "3.10" 
