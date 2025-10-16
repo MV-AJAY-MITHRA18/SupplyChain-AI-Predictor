@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+venv/
+
+# Machine Learning Models and Data to ignore
+/models/*.joblib
+/models/*.h5
+/data/*.csv
+
+# Operating System Files
+.DS_Store
+Thumbs.db

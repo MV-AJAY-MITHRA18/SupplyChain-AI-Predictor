@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Prescriptive Supply Chain Predictor</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+    <!-- Firebase SDK Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, onSnapshot, orderBy, limit, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // setLogLevel('debug'); // Optional: Uncomment for debugging Firebase logs
+        
+        // --- MANDATORY GLOBAL VARIABLES ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        
+        let db;
+        let auth;
+        let userId = 'anonymous';
+
+        // --- GLOBAL APP STATE ---
+        window.alertMessage = (message, type = 'info') => {
+            const alertBox = document.getElementById('app-alert');
+            const color = type === 'error' ? 'bg-red-500' : (type === 'success' ? 'bg-green-500' : 'bg-blue-500');
+            alertBox.innerHTML = message;
+            alertBox.className = `p-3 mb-4 text-white font-medium rounded-lg shadow-md ${color}`;
+            alertBox.style.display = 'block';
+            setTimeout(() => { alertBox.style.display = 'none'; }, 5000);
+        };
+
+        const initFirebase = async () => {
+            if (Object.keys(firebaseConfig).length === 0) {
+                window.alertMessage("Error: Firebase configuration is missing.", 'error');
+                return;
+            }
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                window.db = db;
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        document.getElementById('user-id').textContent = userId;
+                        window.alertMessage(`User authenticated. ID: ${userId.substring(0, 10)}...`, 'success');
+                        window.startRealTimeListeners();
+                    } else {
+                        userId = crypto.randomUUID(); // Use random ID for unauthenticated
+                        document.getElementById('user-id').textContent = 'ANONYMOUS (No Auth Token)';
+                        window.alertMessage("Signed in anonymously.", 'info');
+                        window.startRealTimeListeners();
+                    }
+                    window.userId = userId;
+                });
+            } catch (error) {
+                window.alertMessage(`Firebase Init Error: ${error.message}`, 'error');
+            }
+        };
+
+        window.getPredictionCollection = () => {
+            return collection(db, `artifacts/${appId}/public/data/predictions`);
+        };
+
+        window.startRealTimeListeners = () => {
+            const q = query(window.getPredictionCollection(), orderBy("timestamp", "desc"), limit(10));
+            const unsubscribe = onSnapshot(q, (snapshot) => {
+                const recentPredictions = [];
+                snapshot.forEach((doc) => {
+                    recentPredictions.push({ id: doc.id, ...doc.data() });
+                });
+                window.displayRecentPredictions(recentPredictions);
+            }, (error) => {
+                window.alertMessage(`Firestore Listener Error: ${error.message}`, 'error');
+            });
+            return unsubscribe;
+        };
+
+        initFirebase();
+    </script>
+    
+    <!-- Application UI -->
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2 border-b-4 border-indigo-500 pb-2">
+            Real-Time Prescriptive Supply Chain App
+        </h1>
+        <div id="user-info" class="text-sm text-gray-600 mb-4">
+            User ID: <span id="user-id" class="font-mono text-xs">Loading...</span>
+        </div>
+
+        <div id="app-alert" style="display:none;" class="p-3 mb-4 text-white font-medium rounded-lg shadow-md"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Panel -->
+            <div id="input-panel" class="lg:col-span-1 p-6 bg-white rounded-xl shadow-xl h-full sticky top-0">
+                <h2 class="text-xl font-semibold mb-4 text-indigo-700">Predictive Input Factors</h2>
+                <div class="space-y-4">
+                    
+                    <!-- Destination -->
+                    <label class="block">
+                        <span class="text-gray-700 font-medium">Destination Location:</span>
+                        <select id="input-destination" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <option value="City_1_East">City 1 (East)</option>
+                            <option value="City_2_West">City 2 (West)</option>
+                            <option value="Port_Z_Gulf">Port Z (Gulf Coast)</option>
+                        </select>
+                    </label>
+                    
+                    <!-- Product Category -->
+                     <label class="block">
+                        <span class="text-gray-700 font-medium">Product Category:</span>
+                        <select id="input-product" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 bg-gray-50">
+                            <option value="Electronics">Electronics (Medium Cost)</option>
+                            <option value="Perishables">Perishables (High Cost)</option>
+                            <option value="Machinery">Machinery (Highest Cost)</option>
+                        </select>
+                    </label>
+
+                    <!-- Weather Severity -->
+                    <label class="block">
+                        <span class="text-gray-700 font-medium">Forecasted Weather Severity (1-5):</span>
+                        <input 
+                            type="range" 
+                            id="input-weather" 
+                            min="1" 
+                            max="5" 
+                            step="1" 
+                            value="1" 
+                            oninput="document.getElementById('weather-output').textContent=this.value" 
+                            class="mt-1 block w-full appearance-none bg-indigo-200 rounded-lg h-2 cursor-pointer"
+                        />
+                        <span id="weather-output" class="text-sm text-indigo-500 font-bold">1</span>
+                    </label>
+
+                    <!-- Strike Flag -->
+                    <label class="flex items-center space-x-2 p-2 bg-red-50 rounded-lg">
+                        <input type="checkbox" id="input-strike" class="h-4 w-4 text-red-600 rounded border-gray-300 focus:ring-red-500"/>
+                        <span class="text-red-700 font-medium">Flag: Local Labor Strike Active?</span>
+                    </label>
+                    
+                    <!-- Button -->
+                    <button 
+                        onclick="window.predictAndSave()"
+                        class="w-full py-3 mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-lg shadow-md transition duration-150"
+                    >
+                        RUN REAL-TIME PREDICTION
+                    </button>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="lg:col-span-2 space-y-6">
+                
+                <h2 class="text-xl font-semibold text-gray-800">Prediction Results</h2>
+                
+                <!-- KPIs -->
+                <div id="kpi-output" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- KPI 1: Probability -->
+                    <div id="kpi-prob" class="p-5 rounded-xl shadow-lg bg-gray-300">
+                        <p class="text-xs font-medium text-gray-700 uppercase">Delay Probability</p>
+                        <p class="text-3xl font-extrabold text-gray-900 mt-1" id="prob-val">---</p>
+                        <p class="text-xs text-gray-700 mt-1">Predicted Risk Score</p>
+                    </div>
+                    <!-- KPI 2: Expected Loss -->
+                    <div id="kpi-loss" class="p-5 rounded-xl shadow-lg bg-gray-300">
+                        <p class="text-xs font-medium text-gray-700 uppercase">Expected Loss Value</p>
+                        <p class="text-3xl font-extrabold text-gray-900 mt-1" id="loss-val">---</p>
+                        <p class="text-xs text-gray-700 mt-1">If no action is taken</p>
+                    </div>
+                    <!-- KPI 3: Prescriptive Action -->
+                    <div id="kpi-action" class="p-5 rounded-xl shadow-lg bg-gray-300">
+                        <p class="text-xs font-medium text-gray-700 uppercase">Prescriptive Action</p>
+                        <p class="text-lg font-extrabold text-gray-900 mt-1" id="action-val">---</p>
+                        <p class="text-xs text-gray-700 mt-1">Highest Net Benefit Recommendation</p>
+                    </div>
+                </div>
+
+                <!-- SHAP Drivers -->
+                <div class="p-6 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Root Cause Analysis (Top SHAP Drivers)</h2>
+                    <div id="drivers-output" class="text-gray-600 space-y-2">
+                        <p class="text-gray-500">Run prediction to analyze the root causes.</p>
+                    </div>
+                </div>
+
+                <!-- Recent Predictions Table -->
+                <div class="p-6 bg-white rounded-xl shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-800">Recent Real-Time Alerts (Saved to Firestore)</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-indigo-50">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Time</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Risk %</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Action</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Net Benefit</th>
+                                    <th class="px-3 py-2 text-left text-xs font-medium text-indigo-700 uppercase tracking-wider">Top Driver</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-predictions-table" class="bg-white divide-y divide-gray-200">
+                                <!-- Data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Core AI/ML and Prescriptive Logic in JavaScript -->
+    <script>
+        // --- Core AI Logic (Simulating Trained XGBoost/SHAP) ---
+        const runPrediction = (inputs) => {
+            let probability = 0.25; 
+            const drivers = [];
+            const COST_EXPEDITE = 800;
+            const REDUCTION_EXPEDITE = 0.85;
+            const PROBABILITY_THRESHOLD = 0.55;
+
+            // --- 1. Predictive Model (XGBoost Logic) ---
+            if (inputs.weatherSeverity >= 4) {
+                probability += 0.3;
+                drivers.push({ feature: 'Weather_Severity (High)', score: 0.30 });
+            } else if (inputs.weatherSeverity >= 2) {
+                probability += 0.1;
+            }
+
+            if (inputs.isStrike) {
+                probability += 0.45;
+                drivers.push({ feature: 'Strike_Flag (Operational)', score: 0.45 });
+            }
+
+            if (inputs.destination.includes('Port')) {
+                probability += 0.2;
+                drivers.push({ feature: 'Destination_Port_Risk', score: 0.20 });
+            }
+            
+            probability = Math.min(1.0, probability);
+            probability = Math.max(0.01, probability);
+            
+            // --- 2. Cost Quantification ---
+            const costRate = (inputs.productCategory === 'Machinery' || inputs.productCategory === 'Perishables') ? 2.5 : 1.2;
+            const simulatedPotentialDelayMinutes = 300 * (probability / 0.5); 
+            const flatPenalty = 600; 
+            
+            const costImpactUSD = (simulatedPotentialDelayMinutes * costRate) + flatPenalty;
+            const expectedLossUSD = probability * costImpactUSD;
+
+            // --- 3. Prescriptive Logic (Optimization) ---
+            let interventionAction = "No Action";
+            let netBenefitUSD = 0;
+
+            if (probability >= PROBABILITY_THRESHOLD) {
+                const benefitExpedite = (expectedLossUSD * REDUCTION_EXPEDITE) - COST_EXPEDITE;
+                
+                if (benefitExpedite > 0) {
+                    interventionAction = "EXPEDITE";
+                    netBenefitUSD = benefitExpedite;
+                } else {
+                    interventionAction = "MONITOR";
+                }
+            }
+
+            const topDriver = drivers.length > 0 ? drivers.sort((a, b) => b.score - a.score)[0].feature : 'Low Risk Factors';
+
+            return {
+                probability,
+                expectedLossUSD,
+                interventionAction,
+                netBenefitUSD,
+                topDriver,
+                drivers
+            };
+        };
+
+        // --- UI Update Function ---
+        window.updateKPIs = (result) => {
+            const probVal = document.getElementById('prob-val');
+            const lossVal = document.getElementById('loss-val');
+            const actionVal = document.getElementById('action-val');
+            const kpiProb = document.getElementById('kpi-prob');
+            const kpiLoss = document.getElementById('kpi-loss');
+            const kpiAction = document.getElementById('kpi-action');
+            const driversOutput = document.getElementById('drivers-output');
+
+            const prob = result.probability;
+            const loss = result.expectedLossUSD;
+            const action = result.interventionAction;
+
+            // Update Text
+            probVal.textContent = `${(prob * 100).toFixed(1)}%`;
+            lossVal.textContent = `$${loss.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+            actionVal.textContent = action;
+
+            // Update Colors (Risk Visualization)
+            let probColor = 'bg-green-600';
+            let actionColor = 'bg-gray-400';
+            if (prob > 0.7) probColor = 'bg-red-600';
+            else if (prob > 0.5) probColor = 'bg-yellow-500';
+
+            if (action === 'EXPEDITE') actionColor = 'bg-red-600';
+            else if (action === 'MONITOR') actionColor = 'bg-yellow-500';
+            else actionColor = 'bg-green-600';
+
+            kpiProb.className = `p-5 rounded-xl shadow-lg transition duration-300 ${probColor}`;
+            kpiLoss.className = `p-5 rounded-xl shadow-lg transition duration-300 bg-yellow-100`;
+            kpiAction.className = `p-5 rounded-xl shadow-lg transition duration-300 ${actionColor}`;
+
+            // Update Drivers List (SHAP Output)
+            if (result.drivers.length > 0) {
+                driversOutput.innerHTML = `<ul class="list-disc list-inside space-y-1">
+                    ${result.drivers.map(d => `<li class="font-medium">${d.feature}: <span class="text-indigo-600">${(d.score*100).toFixed(1)}% Contribution</span></li>`).join('')}
+                </ul>`;
+            } else {
+                 driversOutput.innerHTML = `<p class="text-green-600">No major factors identified. Low risk predicted.</p>`;
+            }
+        };
+
+        // --- Save and Display Function (Main App Loop) ---
+        window.predictAndSave = async () => {
+            if (!window.db) {
+                window.alertMessage("Database connection not ready. Please wait.", 'error');
+                return;
+            }
+
+            const inputs = {
+                destination: document.getElementById('input-destination').value,
+                productCategory: document.getElementById('input-product').value,
+                weatherSeverity: parseInt(document.getElementById('input-weather').value),
+                isStrike: document.getElementById('input-strike').checked,
+            };
+
+            const result = runPrediction(inputs);
+            window.updateKPIs(result);
+            window.alertMessage(`Prediction calculated: Action is ${result.interventionAction}`, 'info');
+
+            // Save Prediction to Firestore (Public Collection)
+            try {
+                const newPrediction = {
+                    ...inputs,
+                    ...result,
+                    userId: window.userId,
+                    timestamp: new Date().toISOString(),
+                    netBenefit: parseFloat(result.netBenefitUSD.toFixed(2)),
+                    riskScore: parseFloat((result.probability * 100).toFixed(1)),
+                };
+                
+                await addDoc(window.getPredictionCollection(), newPrediction);
+                window.alertMessage(`Prediction saved to database!`, 'success');
+            } catch (error) {
+                window.alertMessage(`Failed to save to Firestore: ${error.message}`, 'error');
+            }
+        };
+
+        // --- Real-Time Listener Display Function ---
+        window.displayRecentPredictions = (predictions) => {
+            const tableBody = document.getElementById('recent-predictions-table');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = predictions.map(p => `
+                <tr class="${p.interventionAction === 'EXPEDITE' ? 'bg-red-50' : (p.interventionAction === 'MONITOR' ? 'bg-yellow-50' : 'bg-green-50')}">
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-800">${new Date(p.timestamp).toLocaleTimeString()}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm font-medium ${p.riskScore > 70 ? 'text-red-700' : 'text-gray-800'}">${p.riskScore}%</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm font-semibold">${p.interventionAction}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-sm">${p.netBenefit.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</td>
+                    <td class="px-3 py-2 whitespace-nowrap text-xs text-gray-600">${p.topDriver.substring(0, 30)}...</td>
+                </tr>
+            `).join('');
+        };
+    </script>
+</body>
+</html>

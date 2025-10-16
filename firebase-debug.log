@@ -1,0 +1,165 @@
+[debug] [2025-10-16T08:53:16.731Z] ----------------------------------------------------------------------
+[debug] [2025-10-16T08:53:16.734Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-10-16T08:53:16.735Z] CLI Version:   14.20.0
+[debug] [2025-10-16T08:53:16.735Z] Platform:      win32
+[debug] [2025-10-16T08:53:16.735Z] Node Version:  v22.20.0
+[debug] [2025-10-16T08:53:16.735Z] Time:          Thu Oct 16 2025 14:23:16 GMT+0530 (India Standard Time)
+[debug] [2025-10-16T08:53:16.735Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Ajay Mithra\Downloads\ajay\SupplyChain_AiPredictor
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2025-10-16T08:53:37.513Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-16T08:53:37.514Z] > authorizing via signed-in user (ajaymithra2004g@gmail.com)
+[debug] [2025-10-16T08:54:13.134Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:54:13.134Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:54:13.138Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1/projects:checkProjectId [none]
+[debug] [2025-10-16T08:54:13.138Z] >>> [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"proposedId":"ajay-scm-predictor-2025"}
+[debug] [2025-10-16T08:54:13.871Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1/projects:checkProjectId 200
+[debug] [2025-10-16T08:54:13.871Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"projectIdStatus":"PROJECT_ID_AVAILABLE","suggestedProjectId":"ajay-scm-predictor-2025"}
+[debug] [2025-10-16T08:55:07.903Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:55:07.903Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:55:07.903Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects [none]
+[debug] [2025-10-16T08:55:07.903Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"projectId":"ajay-scm-predictor-2025","name":"Ajay's Prescriptive SCM App"}
+[debug] [2025-10-16T08:55:09.775Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects 200
+[debug] [2025-10-16T08:55:09.775Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"name":"operations/create_project.global.8671068098316362202"}
+[debug] [2025-10-16T08:55:09.776Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:55:09.776Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:55:09.776Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.8671068098316362202 [none]
+[debug] [2025-10-16T08:55:11.226Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.8671068098316362202 200
+[debug] [2025-10-16T08:55:11.226Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.8671068098316362202 {"name":"operations/create_project.global.8671068098316362202","metadata":{"@type":"type.googleapis.com/google.cloudresourcemanager.v1.ProjectCreationStatus","ready":true},"done":true,"error":{"code":9,"message":"Callers must accept Terms of Service","details":[{"@type":"type.googleapis.com/google.rpc.PreconditionFailure","violations":[{"type":"TOS","subject":"cloud","description":"Callers must accept Terms of Service"}]}]}}
+[debug] [2025-10-16T08:55:11.534Z] FirebaseError: Callers must accept Terms of Service
+    at OperationPoller.poll (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\operation-poller.js:24:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async createCloudProject (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:227:29)
+    at async createFirebaseProjectAndLog (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:87:9)
+    at async Object.doSetup (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\features\project.js:65:24)
+    at async init (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\index.js:73:13)
+    at async Command.initAction [as actionFn] (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\init.js:219:5)
+[error] 
+[error] Error: Failed to create project. See firebase-debug.log for more info.
+[debug] [2025-10-16T08:56:11.886Z] ----------------------------------------------------------------------
+[debug] [2025-10-16T08:56:11.892Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-10-16T08:56:11.893Z] CLI Version:   14.20.0
+[debug] [2025-10-16T08:56:11.893Z] Platform:      win32
+[debug] [2025-10-16T08:56:11.893Z] Node Version:  v22.20.0
+[debug] [2025-10-16T08:56:11.894Z] Time:          Thu Oct 16 2025 14:26:11 GMT+0530 (India Standard Time)
+[debug] [2025-10-16T08:56:11.894Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Ajay Mithra\Downloads\ajay\SupplyChain_AiPredictor
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2025-10-16T08:56:25.302Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-16T08:56:25.302Z] > authorizing via signed-in user (ajaymithra2004g@gmail.com)
+[debug] [2025-10-16T08:56:34.546Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:34.546Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:34.550Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1/projects:checkProjectId [none]
+[debug] [2025-10-16T08:56:34.550Z] >>> [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"proposedId":"ajay-scm-app-2025-v2"}
+[debug] [2025-10-16T08:56:35.277Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1/projects:checkProjectId 200
+[debug] [2025-10-16T08:56:35.277Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"projectIdStatus":"PROJECT_ID_AVAILABLE","suggestedProjectId":"ajay-scm-app-2025-v2"}
+[debug] [2025-10-16T08:56:50.222Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:50.222Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:50.222Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects [none]
+[debug] [2025-10-16T08:56:50.223Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"projectId":"ajay-scm-app-2025-v2","name":"ajay-scm-app-2025-v2"}
+[debug] [2025-10-16T08:56:51.978Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects 200
+[debug] [2025-10-16T08:56:51.978Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"name":"operations/create_project.global.6074123518232617451"}
+[debug] [2025-10-16T08:56:51.979Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:51.979Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:56:51.979Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.6074123518232617451 [none]
+[debug] [2025-10-16T08:56:53.371Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.6074123518232617451 200
+[debug] [2025-10-16T08:56:53.371Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.6074123518232617451 {"name":"operations/create_project.global.6074123518232617451","metadata":{"@type":"type.googleapis.com/google.cloudresourcemanager.v1.ProjectCreationStatus","ready":true},"done":true,"error":{"code":9,"message":"Callers must accept Terms of Service","details":[{"@type":"type.googleapis.com/google.rpc.PreconditionFailure","violations":[{"type":"TOS","subject":"cloud","description":"Callers must accept Terms of Service"}]}]}}
+[debug] [2025-10-16T08:56:53.735Z] FirebaseError: Callers must accept Terms of Service
+    at OperationPoller.poll (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\operation-poller.js:24:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async createCloudProject (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:227:29)
+    at async createFirebaseProjectAndLog (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:87:9)
+    at async Object.doSetup (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\features\project.js:65:24)
+    at async init (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\index.js:73:13)
+    at async Command.initAction [as actionFn] (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\init.js:219:5)
+[error] 
+[error] Error: Failed to create project. See firebase-debug.log for more info.
+[debug] [2025-10-16T08:57:03.907Z] ----------------------------------------------------------------------
+[debug] [2025-10-16T08:57:03.912Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2025-10-16T08:57:03.913Z] CLI Version:   14.20.0
+[debug] [2025-10-16T08:57:03.913Z] Platform:      win32
+[debug] [2025-10-16T08:57:03.913Z] Node Version:  v22.20.0
+[debug] [2025-10-16T08:57:03.914Z] Time:          Thu Oct 16 2025 14:27:03 GMT+0530 (India Standard Time)
+[debug] [2025-10-16T08:57:03.914Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\Ajay Mithra\Downloads\ajay\SupplyChain_AiPredictor
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2025-10-16T08:57:11.809Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-16T08:57:11.809Z] > authorizing via signed-in user (ajaymithra2004g@gmail.com)
+[debug] [2025-10-16T08:57:25.858Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:25.858Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:25.861Z] >>> [apiv2][query] POST https://firebase.googleapis.com/v1/projects:checkProjectId [none]
+[debug] [2025-10-16T08:57:25.861Z] >>> [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"proposedId":"ajay-scm-app-2025-v2"}
+[debug] [2025-10-16T08:57:26.618Z] <<< [apiv2][status] POST https://firebase.googleapis.com/v1/projects:checkProjectId 200
+[debug] [2025-10-16T08:57:26.619Z] <<< [apiv2][body] POST https://firebase.googleapis.com/v1/projects:checkProjectId {"projectIdStatus":"PROJECT_ID_AVAILABLE","suggestedProjectId":"ajay-scm-app-2025-v2"}
+[debug] [2025-10-16T08:57:36.033Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:36.034Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:36.034Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects [none]
+[debug] [2025-10-16T08:57:36.034Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"projectId":"ajay-scm-app-2025-v2","name":"Ajay's Prescriptive SCM App V2"}
+[debug] [2025-10-16T08:57:37.624Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects 200
+[debug] [2025-10-16T08:57:37.624Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"name":"operations/create_project.global.7622728971656683380"}
+[debug] [2025-10-16T08:57:37.626Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:37.626Z] Checked if tokens are valid: true, expires at: 1760607534166
+[debug] [2025-10-16T08:57:37.627Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.7622728971656683380 [none]
+[debug] [2025-10-16T08:57:39.084Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.7622728971656683380 200
+[debug] [2025-10-16T08:57:39.084Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/operations/create_project.global.7622728971656683380 {"name":"operations/create_project.global.7622728971656683380","metadata":{"@type":"type.googleapis.com/google.cloudresourcemanager.v1.ProjectCreationStatus","ready":true},"done":true,"error":{"code":9,"message":"Callers must accept Terms of Service","details":[{"@type":"type.googleapis.com/google.rpc.PreconditionFailure","violations":[{"type":"TOS","subject":"cloud","description":"Callers must accept Terms of Service"}]}]}}
+[debug] [2025-10-16T08:57:39.446Z] FirebaseError: Callers must accept Terms of Service
+    at OperationPoller.poll (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\operation-poller.js:24:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async createCloudProject (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:227:29)
+    at async createFirebaseProjectAndLog (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\management\projects.js:87:9)
+    at async Object.doSetup (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\features\project.js:65:24)
+    at async init (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\init\index.js:73:13)
+    at async Command.initAction [as actionFn] (C:\Users\Ajay Mithra\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\init.js:219:5)
+[error] 
+[error] Error: Failed to create project. See firebase-debug.log for more info.
