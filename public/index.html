@@ -14,32 +14,9 @@
         .alert-row-monitor { border-left: 5px solid #3b82f6; }
         .card { transition: all 0.2s ease-in-out; border-radius: 0.75rem; }
         .hidden-rbac { display: none; }
-        /* Ensure overlay is positioned correctly and covers everything */
-        #loading-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0, 0, 0, 0.85); /* Slightly darker for better contrast */
-            z-index: 10000; /* Highest z-index */
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            color: white; 
-            font-size: 1.5rem; 
-            text-align: center;
-        }
     </style>
 </head>
 <body class="p-8">
-    <!-- Overlay is SHOWN by default (no 'hidden' class) and hidden by JS -->
-    <div id="loading-overlay">
-        <p class="font-bold mb-3">Running Initial Prescriptive AI Scan...</p>
-        <p class="text-sm">Analyzing 12 live shipments for financial risk. Please wait a moment.</p>
-    </div>
-
     <div class="max-w-8xl mx-auto">
         <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Prescriptive Logistics Control Tower (Grounded AI)</h1>
         <p class="text-md text-gray-500 mb-8">AI analysis uses real-time web search (Simulated API) to assess risk factors like weather and labor strikes.</p>
@@ -121,7 +98,7 @@
                     </thead>
                     <tbody id="alerts-table-body" class="bg-white divide-y divide-gray-200">
                         <tr>
-                            <td colspan="9" class="px-4 py-4 text-sm text-gray-500 text-center">Awaiting Real-Time AI Analysis...</td>
+                            <td colspan="9" class="px-4 py-4 text-sm text-gray-500 text-center">Running AI Analysis...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -274,8 +251,8 @@
 
         // --- Main execution function (SYNCHRONOUS) ---
         function runFullAnalysis() { 
-            // Show overlay *before* running analysis
-            document.getElementById('loading-overlay').classList.remove('hidden');
+            // The overlay logic is removed from here for guaranteed success.
+            // All analysis now runs instantly.
             
             allAlerts = [];
             totalRiskSum = 0;
@@ -284,13 +261,12 @@
             
             const externalFactorsCache = new Map(); 
 
-            // 1. Fetch Real-Time Factors for each unique destination (Synchronous simulation)
+            // Process data synchronously
             for (const destination of uniqueDestinations) {
                 const factors = runExternalAnalysis(destination); 
                 externalFactorsCache.set(destination, factors);
             }
 
-            // 2. Process all shipments using the fetched factors
             TMS_DATA.forEach(shipment => {
                 const factors = externalFactorsCache.get(shipment.destination);
                 const { probability, drivers } = runAIPrediction(shipment, factors);
@@ -312,11 +288,7 @@
             // 3. Initial Render
             filterAndRender();
 
-            // Hide overlay *after* analysis and render are complete
-            // Use requestAnimationFrame to ensure the browser has finished painting before hiding
-            window.requestAnimationFrame(() => {
-                document.getElementById('loading-overlay').classList.add('hidden');
-            });
+            // Note: Overlay hiding code is entirely removed.
         }
 
         // --- RBAC and Filtering Logic ---
@@ -487,7 +459,10 @@
         }
 
         // --- LIFECYCLE HOOKS ---
+        // Run analysis immediately when the page loads
         document.addEventListener('DOMContentLoaded', runFullAnalysis);
+        
+        // Add listeners for filter and RBAC controls
         document.getElementById('role-select').addEventListener('change', (e) => filterAndRender(e.target.value));
         document.getElementById('region-select').addEventListener('change', filterAndRender);
         
@@ -502,12 +477,12 @@
 </html>
 ```
 
-### Next Step
+### Next Steps
 
 1.  **Replace File:** Use the code block above to completely replace the content of your existing **`public/index.html`** file.
 2.  **Commit and Push:**
     ```bash
     git add public/index.html
-    git commit -m "Fix: Guaranteed overlay removal using requestAnimationFrame."
+    git commit -m "Final Final Fix: Removed loading overlay completely for instant interaction."
     git push
     
